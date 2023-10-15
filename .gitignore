@@ -33,3 +33,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# expo assets
+.assets/adaptive-icon.png
+.assets/favicon.png
+.assets/icon.png
+.assets/splash.png
