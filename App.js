@@ -2,86 +2,86 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const App = () => {
-  const [counter1, setCounter1] = useState(0);
-  const [counter2, setCounter2] = useState(0);
+// IncrementButton component
+const IncrementButton = ({ onPress, style }) => {
+  return (
+    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
+      <Text style={styles.buttonText}>+</Text>
+    </TouchableOpacity>
+  );
+};
 
+const App = () => {
+  const [prosCount, setProsCount] = useState(0);
+  const [consCount, setConsCount] = useState(0);
+
+  // Effect to retrieve counters from storage
   useEffect(() => {
     retrieveCounters();
   }, []);
 
+  // Effect to store counters when they change
   useEffect(() => {
     storeCounters();
-  }, [counter1, counter2]);
+  }, [prosCount, consCount]);
 
+  // Retrieve counters from AsyncStorage
   const retrieveCounters = async () => {
     try {
-      const recoveredCounter1 = await AsyncStorage.getItem("counter1");
-      const recoveredCounter2 = await AsyncStorage.getItem("counter2");
+      const storedProsCount = await AsyncStorage.getItem("counter1");
+      const storedConsCount = await AsyncStorage.getItem("counter2");
 
-      if (recoveredCounter1 !== null) setCounter1(Number(recoveredCounter1));
-      if (recoveredCounter2 !== null) setCounter2(Number(recoveredCounter2));
-    } catch (e) {
-      console.log("Failed to load counters.");
+      if (storedProsCount !== null) setProsCount(Number(storedProsCount));
+      if (storedConsCount !== null) setConsCount(Number(storedConsCount));
+    } catch (error) {
+      console.error("Failed to load counters:", error);
     }
   };
 
+  // Store counters in AsyncStorage
   const storeCounters = async () => {
     try {
-      await AsyncStorage.setItem("counter1", counter1.toString());
-      await AsyncStorage.setItem("counter2", counter2.toString());
-    } catch (e) {
-      console.log("Failed to save counters");
+      await AsyncStorage.setItem("counter1", prosCount.toString());
+      await AsyncStorage.setItem("counter2", consCount.toString());
+    } catch (error) {
+      console.error("Failed to save counters:", error);
     }
   };
 
-  const handleClick1 = () => {
-    setCounter1(counter1 + 1);
+  // Increment pros count
+  const incrementPros = () => {
+    setProsCount(prosCount + 1);
   };
 
-  const handleClick2 = () => {
-    setCounter2(counter2 + 1);
+  // Increment cons count
+  const incrementCons = () => {
+    setConsCount(consCount + 1);
   };
 
-  const handleReset = () => {
-    setCounter1(0);
-    setCounter2(0);
+  // Reset both counters
+  const resetCounters = () => {
+    setProsCount(0);
+    setConsCount(0);
   };
 
   return (
     <View style={styles.outerContainer}>
-      <Text style={styles.heading}>Pros&Cons</Text>
+      <Text style={styles.heading}>Pros & Cons</Text>
       <Text style={styles.header}>Cozy Counter App</Text>
-      <Image
-        source={require("./assets/garden.png")}
-        style={{ width: 160, height: 160, marginTop: 50, marginBottom: 80 }}
-      />
+      <Image source={require("./assets/garden.png")} style={styles.image} />
       <View style={styles.innerContainer}>
         <View style={styles.counterValues}>
-          <Text style={styles.counterValue}>Pros: {counter1}</Text>
-          <Text style={styles.counterValue}>Cons: {counter2}</Text>
+          <Text style={styles.counterValue}>Pros: {prosCount}</Text>
+          <Text style={styles.counterValue}>Cons: {consCount}</Text>
         </View>
         <View style={styles.buttons}>
-          <TouchableOpacity style={styles.button1} onPress={handleClick1}>
-            <Text style={{ color: "#798777", fontWeight: "500", fontSize: 18 }}>
-              +
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button2} onPress={handleClick2}>
-            <Text style={{ color: "#798777", fontWeight: "500", fontSize: 18 }}>
-              +
-            </Text>
-          </TouchableOpacity>
+          <IncrementButton onPress={incrementPros} />
+          <IncrementButton onPress={incrementCons} />
         </View>
       </View>
-      <View style={{ margin: 15 }}>
-        <TouchableOpacity
-          onPress={handleReset}
-          style={styles.setInitialCountButton}
-        >
-          <Text style={{ color: "#fff", fontSize: 16 }}>RESET</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={resetCounters} style={styles.resetButton}>
+        <Text style={styles.resetButtonText}>RESET</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -94,10 +94,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8EDE3",
   },
 
+  image: {
+    width: 160,
+    height: 160,
+    marginTop: 50,
+    marginBottom: 80,
+  },
+
   innerContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 50,
   },
 
   header: {
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  button1: {
+  button: {
     fontSize: 16,
     padding: 10,
     margin: 10,
@@ -142,22 +148,22 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  button2: {
-    fontSize: 16,
-    padding: 10,
-    margin: 10,
-    borderRadius: 8,
-    backgroundColor: "#BFD8B8",
-    elevation: 5,
+  buttonText: {
+    color: "#798777",
+    fontWeight: "500",
+    fontSize: 18,
   },
 
-  setInitialCountButton: {
+  resetButton: {
     padding: 10,
-    fontSize: 16,
-    margin: 15,
     borderRadius: 8,
     backgroundColor: "#E2C2B9",
     elevation: 5,
+  },
+
+  resetButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
